@@ -71,6 +71,7 @@ def N(i,p,x,knot):
 
 vectorN = np.vectorize(N,excluded={0,1,3})
 
+# For problem 1.1
 knotvect = np.array([0.0, 0.0, 0.0, 0.5, 0.8, 1.0, 1.0, 1.0])
 domain = np.linspace(0.0,1.0,100)
 N1 = vectorN(0,2,domain,knotvect)
@@ -78,6 +79,64 @@ N2 = vectorN(1,2,domain,knotvect)
 N3 = vectorN(2,2,domain,knotvect)
 N4 = vectorN(3,2,domain,knotvect)
 N5 = vectorN(4,2,domain,knotvect)
+
+#For problem 1.2
+domain_u = np.array([0.0, 0.25, 0.5, 0.75, 1.0])
+knotvect_orig = knotvect
+knotvect_a = np.array([0,0,0,.5,.5,.8,1,1,1])
+knotvect_b = np.array([0,0,0,0,.5,.5,.8,.8,1,1,1,1])
+knotvect_c = np.array([0,0,0,.3,.5,.8,1,1,1])
+
+control_points_orig = np.array([[50, 50], [150,150], [250,50], [350,250], [450,250]])
+control_points_a = np.array([[50, 50], [150,150], [435.0/2.0, 175.0/2.0], [250,50], [350,250], [450,250]])
+control_points_b = np.array([[50, 50], [150,150], [250,50], [350,250], [450,250]])
+control_points_c = np.array([[50, 50], [110,110], [375.0/2.0, 225.0/2.0], [250,50], [350,250], [450,250]])
+
+N1_orig = vectorN(0,2,domain_u,knotvect_orig)
+N2_orig = vectorN(1,2,domain_u,knotvect_orig)
+N3_orig = vectorN(2,2,domain_u,knotvect_orig)
+N4_orig = vectorN(3,2,domain_u,knotvect_orig)
+N5_orig = vectorN(4,2,domain_u,knotvect_orig)
+
+N1_a = vectorN(0,2,domain_u,knotvect_a)
+N2_a = vectorN(1,2,domain_u,knotvect_a)
+N3_a = vectorN(2,2,domain_u,knotvect_a)
+N4_a = vectorN(3,2,domain_u,knotvect_a)
+N5_a = vectorN(4,2,domain_u,knotvect_a)
+N6_a = vectorN(5,2,domain_u,knotvect_a)
+
+N1_b = vectorN(0,3,domain_u,knotvect_b)
+N2_b = vectorN(1,3,domain_u,knotvect_b)
+N3_b = vectorN(2,3,domain_u,knotvect_b)
+N4_b = vectorN(3,3,domain_u,knotvect_b)
+N5_b = vectorN(4,3,domain_u,knotvect_b)
+
+N1_c = vectorN(0,2,domain_u,knotvect_c)
+N2_c = vectorN(1,2,domain_u,knotvect_c)
+N3_c = vectorN(2,2,domain_u,knotvect_c)
+N4_c = vectorN(3,2,domain_u,knotvect_c)
+N5_c = vectorN(4,2,domain_u,knotvect_c)
+N6_c = vectorN(5,2,domain_u,knotvect_c)
+
+#curve_orig = np.sum(control_points_orig * [N1_orig, N2_orig, N3_orig, N4_orig, N5_orig], axis=0)
+#curve_a =  np.sum(control_points_a * [N1_a, N2_a, N3_a, N4_a, N5_a, N6_a], axis=0)
+#curve_b =  np.sum(control_points_b * [N1_b, N2_b, N3_b, N4_b, N5_b], axis=0)
+#curve_c =  np.sum(control_points_c * [N1_c, N2_c, N3_c, N4_c, N5_c, N6_c, N7_c], axis=0)
+
+#The following calculation is not correct because parition of unity is violated
+#todo check against mathematica
+N_orig = np.array([N1_orig, N2_orig, N3_orig, N4_orig, N5_orig])
+sum_orig = np.ndarray(shape=(2,5))
+print N1_orig
+print N2_orig
+print N3_orig
+print N4_orig
+print N5_orig
+for N_evaluation in N_orig:
+    sum_orig += np.multiply(control_points_orig.transpose(), N_evaluation)
+print sum_orig
+
+
 
 ax.plot(domain, N1)
 ax.plot(domain, N2)
