@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import numpy as np
 import matplotlib as mpl
+from tabulate import tabulate
 from scipy.optimize import bisect
 
 mpl.use('pgf')
@@ -84,6 +85,17 @@ N3 = vectorN(2,2,domain,knotvect)
 N4 = vectorN(3,2,domain,knotvect)
 N5 = vectorN(4,2,domain,knotvect)
 
+ax.plot(domain, N1)
+ax.plot(domain, N2)
+ax.plot(domain, N3)
+ax.plot(domain, N4)
+ax.plot(domain, N5)
+ax.set_xlabel('x')
+ax.set_ylabel('N(x)')
+ax.set_title('B-splines degree 2')
+savefig('problem_1_1_1')
+ax.clear()
+
 #For problem 1.2
 domain_u = np.array([0.0, 0.25, 0.5, 0.75, 1.0])
 knotvect_orig = knotvect
@@ -125,8 +137,6 @@ N4_c = vectorN(3,2,domain_u,knotvect_c)
 N5_c = vectorN(4,2,domain_u,knotvect_c)
 N6_c = vectorN(5,2,domain_u,knotvect_c)
 
-#The following calculation is not correct because parition of unity is violated
-#todo check against mathematica
 N_orig = np.array([N1_orig, N2_orig, N3_orig, N4_orig, N5_orig])
 N_a = np.array([N1_a, N2_a, N3_a, N4_a, N5_a, N6_a])
 N_b = np.array([N1_b, N2_b, N3_b, N4_b, N5_b, N6_b, N7_b, N8_b])
@@ -140,21 +150,36 @@ for point in enumerate(domain_u):
     curve_a.append( np.sum(control_points_a.transpose()*N_a[:,point[0]],axis=1) )
     curve_b.append( np.sum(control_points_b.transpose()*N_b[:,point[0]],axis=1) )
     curve_c.append( np.sum(control_points_c.transpose()*N_c[:,point[0]],axis=1) )
+headers = ["u=0.0", "u=0.25", "u=0.5", "u=0.75", "u=1.0"]
+print tabulate(N_orig, headers, tablefmt="latex")
+print tabulate(N_a, headers, tablefmt="latex")
+print tabulate(N_b, headers, tablefmt="latex")
+print tabulate(N_c, headers, tablefmt="latex")
+print tabulate(np.array(curve_orig).transpose(), headers, tablefmt="latex")
+print tabulate(np.array(curve_a).transpose(), headers, tablefmt="latex")
+print tabulate(np.array(curve_b).transpose(), headers, tablefmt="latex")
+print tabulate(np.array(curve_c).transpose(), headers, tablefmt="latex")
 
-print curve_b
 
 
-print ")()(*)(*)(*)(*)"
+# For problem 2.2
+knotvec_U = np.array([0,0,0,0,2.4,2.4,2.4,2.4])
+knotvec_V = np.array([0,0,0,1.2,1.7,1.7,1.7])
+x_space = np.linspace(0.0,2.4,40)
+y_space = np.linspace(0.0,1.7,40)
+X, Y = np.meshgrid(x_space, y_space)
+Z = []
 
+from mpl_toolkits.mplot3d import Axes3D
+newfig = plt.figure()
+ax3d = newfig.add_subplot(111, projection='3d')
 
-
-ax.plot(domain, N1)
-ax.plot(domain, N2)
-ax.plot(domain, N3)
-ax.plot(domain, N4)
-ax.plot(domain, N5)
-ax.set_xlabel('x')
-ax.set_ylabel('N(x)')
-ax.set_title('B-splines degree 2')
-savefig('problem_1_1_1')
-ax.clear()
+for i in range(4):
+    for j in range(4):
+        Z.append(  (np.array([ vectorN(i,3,x, knotvec_U)*vectorN(j,2,y,knotvec_V) for x,y in zip(np.ravel(X), np.ravel(Y))])).reshape(X.shape))
+        ax3d.set_xlabel('X')
+        ax3d.set_ylabel('Y')
+        ax3d.set_title('Tensor product basis (i,j)=('+ str(i) +', '+ str(j) +')')
+        ax3d.scatter(X,Y,Z[-1])
+        savefig('problem_2_2_'+str(i)+'_'+str(j))
+        ax3d.clear()
